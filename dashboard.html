@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UAV Performance Dashboard</title>
+    <!-- Load Plotly.js for interactive charting -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .dashboard-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .chart-box {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+            width: 45%;
+            min-width: 450px;
+        }
+        @media (max-width: 1000px) {
+            .chart-box {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Tandem Wing VTOL UAV - Graphical Dashboard</h1>
+
+    <div class="dashboard-container">
+        <!-- Power Curve Chart -->
+        <div class="chart-box" id="power-curve"></div>
+        
+        <!-- Mission Profile Chart -->
+        <div class="chart-box" id="mission-profile"></div>
+        
+        <!-- Weight Breakdown Chart -->
+        <div class="chart-box" id="weight-breakdown"></div>
+    </div>
+
+    <script>
+        // 1. Power Required vs Velocity Data
+        const v = [5, 10, 15, 18, 20, 25, 30, 35];
+        const p_req = [1350, 650, 425, 360, 380, 550, 850, 1250];
+        
+        const powerTrace = {
+            x: v, 
+            y: p_req, 
+            type: 'scatter', 
+            mode: 'lines+markers', 
+            line: {color: '#e74c3c', width: 3},
+            marker: {size: 8},
+            name: 'Power (W)'
+        };
+
+        Plotly.newPlot('power-curve', [powerTrace], {
+            title: 'Aerodynamic Power Required vs. Velocity',
+            xaxis: { title: 'Velocity (m/s)', gridcolor: '#ecf0f1' },
+            yaxis: { title: 'Power Required (W)', gridcolor: '#ecf0f1' },
+            plot_bgcolor: '#ffffff',
+            paper_bgcolor: '#ffffff'
+        });
+
+
+        // 2. Mission Power Profile Data
+        const time = [0, 2, 5, 240, 245, 250];
+        const mission_power = [4500, 3000, 900, 900, 2500, 4000];
+        
+        const missionTrace = {
+            x: time, 
+            y: mission_power, 
+            type: 'scatter', 
+            mode: 'lines', 
+            line: {shape: 'hv', color: '#3498db', width: 3}, 
+            fill: 'tozeroy',
+            fillcolor: 'rgba(52, 152, 219, 0.2)'
+        };
+
+        Plotly.newPlot('mission-profile', [missionTrace], {
+            title: 'Mission Power Profile (VTOL & Cruise)',
+            xaxis: { title: 'Time (minutes)', gridcolor: '#ecf0f1' },
+            yaxis: { title: 'Power Output (W)', gridcolor: '#ecf0f1' },
+            plot_bgcolor: '#ffffff',
+            paper_bgcolor: '#ffffff'
+        });
+
+
+        // 3. Weight Breakdown Data (20 kg MTOW)
+        const labels = ['Battery', 'Payload', 'Fuselage', 'VTOL Motors', 'Front Wing', 'Rear Wing', 'Cruise Motor', 'Electronics', 'Landing Gear'];
+        const values = [8.0, 5.0, 1.6, 1.6, 1.2, 1.0, 0.6, 0.5, 0.5];
+        
+        const weightTrace = {
+            values: values, 
+            labels: labels, 
+            type: 'pie', 
+            hole: 0.4, // Makes it a donut chart
+            marker: {
+                colors: ['#2ecc71', '#f1c40f', '#9b59b6', '#34495e', '#1abc9c', '#16a085', '#e67e22', '#95a5a6', '#7f8c8d']
+            },
+            textinfo: 'label+percent'
+        };
+
+        Plotly.newPlot('weight-breakdown', [weightTrace], {
+            title: 'UAV Weight Breakdown (20 kg MTOW)',
+            showlegend: false
+        });
+    </script>
+
+</body>
+</html>
